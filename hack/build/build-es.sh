@@ -19,9 +19,9 @@
 
 set -e
 
-source hack/common.sh
-source hack/config.sh
-source hack/version.sh
+source hack/build/common.sh
+source hack/build/config.sh
+source hack/build/version.sh
 
 if [ -z "$1" ]; then
     echo "invalid param, one parameter is required"
