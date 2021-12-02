@@ -66,6 +66,8 @@ elif [ "${target}" = "cdi-importer" ]; then
     go build -a -o ${OUTPUT_DIR}/cdi-source-update-poller tools/cdi-source-update-poller/main.go && chmod +x ${OUTPUT_DIR}/cdi-source-update-poller
 elif [ "${target}" = "cdi-operator" ]; then
     go build -a -o ${OUTPUT_DIR}/csv-generator tools/csv-generator/csv-generator.go && chmod +x ${OUTPUT_DIR}/csv-generator
+elif [ "${target}" = "cdi-uploadserver" ]; then
+    sudo dnf install libnbd-devel.x86_64
 fi
 
 
@@ -76,6 +78,6 @@ go vet ./cmd/${target}/...
 cd cmd/${target}
 
 echo "building dynamic binary $BIN_NAME"
-GOOS=linux GOARCH=${ARCH} go build -tags selinux -o ${OUTPUT_DIR}/${LINUX_NAME} -ldflags '-extldflags "static"' -ldflags "$(kubevirt::version::ldflags)"
+GOOS=linux GOARCH=${ARCH} go build -tags selinux -o ${OUTPUT_DIR}/${LINUX_NAME} -ldflags '-extldflags "static"' -ldflags "$(cdi::version::ldflags)"
 
 (cd ${OUTPUT_DIR} && ln -sf ${LINUX_NAME} ${BIN_NAME})
