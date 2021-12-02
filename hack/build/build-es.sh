@@ -53,6 +53,9 @@ aarch64* | arm64*)
 esac
 
 
+yum install -y unzip wget
+
+
 # handle binaries
 
 eval "$(go env)"
