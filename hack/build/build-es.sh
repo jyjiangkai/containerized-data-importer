@@ -53,9 +53,6 @@ aarch64* | arm64*)
 esac
 
 
-yum install -y libnbd-devel nbdkit-devel
-
-
 # handle binaries
 
 eval "$(go env)"
