@@ -53,7 +53,15 @@ aarch64* | arm64*)
 esac
 
 
-yum install -y unzip wget
+# mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.backup
+# wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo
+# sed -i 's/\$releasever/7/g' /etc/yum.repos.d/CentOS-*.repo
+# yum makecache
+
+# yum install -y epel-release
+# yum install -y dnf
+
+dnf install -y wget cpio diffutils git python3-pip python3-devel mercurial gcc gcc-c++ glibc-devel findutils autoconf automake libtool jq rsync-daemon rsync patch libnbd-devel qemu-img xen-libs capstone nbdkit-devel unzip java-11-openjdk-devel btrfs-progs-devel device-mapper-devel --skip-broken
 
 
 # handle binaries
@@ -69,23 +77,6 @@ elif [ "${target}" = "cdi-importer" ]; then
     go build -a -o ${OUTPUT_DIR}/cdi-source-update-poller tools/cdi-source-update-poller/main.go && chmod +x ${OUTPUT_DIR}/cdi-source-update-poller
 elif [ "${target}" = "cdi-operator" ]; then
     go build -a -o ${OUTPUT_DIR}/csv-generator tools/csv-generator/csv-generator.go && chmod +x ${OUTPUT_DIR}/csv-generator
-elif [ "${target}" = "cdi-uploadserver" ]; then
-    # sudo dnf install libnbd-devel.x86_64
-    if [ "${ARCH}" = "amd64" ]; then
-        wget http://mirrors.163.com/fedora/updates/33/Everything/x86_64/Packages/l/libnbd-1.6.5-1.fc33.x86_64.rpm -O /tmp/libnbd-1.6.5-1.fc33.x86_64.rpm && rpm -ivh /tmp/libnbd-1.6.5-1.fc33.x86_64.rpm
-        wget http://mirrors.163.com/fedora/updates/33/Everything/x86_64/Packages/q/qemu-img-5.1.0-9.fc33.x86_64.rpm -O /tmp/qemu-img-5.1.0-9.fc33.x86_64.rpm && rpm -ivh /tmp/qemu-img-5.1.0-9.fc33.x86_64.rpm
-        wget http://mirrors.163.com/fedora/updates/33/Everything/x86_64/Packages/x/xen-libs-4.14.3-2.fc33.x86_64.rpm -O /tmp/xen-libs-4.14.3-2.fc33.x86_64.rpm && rpm -ivh /tmp/xen-libs-4.14.3-2.fc33.x86_64.rpm
-        wget https://mirrors.tuna.tsinghua.edu.cn/fedora/releases/33/Everything/x86_64/os/Packages/l/libaio-0.3.111-10.fc33.x86_64.rpm -O /tmp/libaio-0.3.111-10.fc33.x86_64.rpm && rpm -ivh /tmp/libaio-0.3.111-10.fc33.x86_64.rpm
-        wget https://mirrors.tuna.tsinghua.edu.cn/fedora/releases/33/Everything/x86_64/os/Packages/c/capstone-4.0.2-3.fc33.x86_64.rpm -O /tmp/capstone-4.0.2-3.fc33.x86_64.rpm && rpm -ivh /tmp/capstone-4.0.2-3.fc33.x86_64.rpm
-        wget http://mirrors.163.com/fedora/updates/33/Everything/x86_64/Packages/l/liburing-0.7-3.fc33.x86_64.rpm -O /tmp/liburing-0.7-3.fc33.x86_64.rpm && rpm -ivh /tmp/liburing-0.7-3.fc33.x86_64.rpm
-    elif [ "${ARCH}" = "arm64" ]; then
-        wget http://mirrors.163.com/fedora/updates/33/Everything/aarch64/Packages/l/libnbd-1.6.5-1.fc33.aarch64.rpm -O /tmp/libnbd-1.6.5-1.fc33.aarch64.rpm && rpm -ivh /tmp/libnbd-1.6.5-1.fc33.aarch64.rpm
-        wget http://mirrors.163.com/fedora/updates/33/Everything/aarch64/Packages/q/qemu-img-5.1.0-9.fc33.aarch64.rpm -O /tmp/qemu-img-5.1.0-9.fc33.aarch64.rpm && rpm -ivh /tmp/qemu-img-5.1.0-9.fc33.aarch64.rpm
-        wget http://mirrors.163.com/fedora/updates/33/Everything/aarch64/Packages/x/xen-libs-4.14.3-2.fc33.aarch64.rpm -O /tmp/xen-libs-4.14.3-2.fc33.aarch64.rpm && rpm -ivh /tmp/xen-libs-4.14.3-2.fc33.aarch64.rpm
-        wget https://mirrors.tuna.tsinghua.edu.cn/fedora/releases/33/Everything/aarch64/os/Packages/l/libaio-0.3.111-10.fc33.aarch64.rpm -O /tmp/libaio-0.3.111-10.fc33.aarch64.rpm && rpm -ivh /tmp/libaio-0.3.111-10.fc33.aarch64.rpm
-        wget https://mirrors.tuna.tsinghua.edu.cn/fedora/releases/33/Everything/aarch64/os/Packages/c/capstone-4.0.2-3.fc33.aarch64.rpm -O /tmp/capstone-4.0.2-3.fc33.aarch64.rpm && rpm -ivh /tmp/capstone-4.0.2-3.fc33.aarch64.rpm
-        wget http://mirrors.163.com/fedora/updates/33/Everything/aarch64/Packages/l/liburing-0.7-3.fc33.aarch64.rpm -O /tmp/liburing-0.7-3.fc33.aarch64.rpm && rpm -ivh /tmp/liburing-0.7-3.fc33.aarch64.rpm
-    fi
 fi
 
 
@@ -96,6 +87,6 @@ go vet ./cmd/${target}/...
 cd cmd/${target}
 
 echo "building dynamic binary $BIN_NAME"
-GOOS=linux GOARCH=${ARCH} go build -tags selinux -o ${OUTPUT_DIR}/${LINUX_NAME} -ldflags '-extldflags "static"' -ldflags "$(cdi::version::ldflags)"
+GOOS=linux GOARCH=${ARCH} go build -tags selinux -o ${OUTPUT_DIR}/${LINUX_NAME}
 
 (cd ${OUTPUT_DIR} && ln -sf ${LINUX_NAME} ${BIN_NAME})
