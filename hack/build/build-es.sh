@@ -52,11 +52,32 @@ aarch64* | arm64*)
     ;;
 esac
 
-
-dnf install -y wget cpio diffutils git python3-pip python3-devel mercurial \
-gcc gcc-c++ glibc-devel findutils autoconf automake libtool jq rsync-daemon \
-rsync patch libnbd-devel nbdkit-devel unzip java-11-openjdk-devel btrfs-progs-devel device-mapper-devel --skip-broken
-
+dnf -y install \
+    wget \
+    cpio \
+    diffutils \
+    git \
+    python3-pip \
+    python3-devel \
+    mercurial \
+    gcc \
+    gcc-c++ \
+    glibc-devel \
+    findutils \
+    autoconf \
+    automake \
+    libtool \
+    jq \
+    rsync-daemon \
+    rsync \
+    patch \
+    libnbd-devel \
+    nbdkit-devel \
+    unzip \
+    java-11-openjdk-devel \
+    btrfs-progs-devel \
+    device-mapper-devel --skip-broken && \
+dnf -y clean all
 
 # handle binaries
 
