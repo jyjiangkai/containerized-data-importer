@@ -53,15 +53,9 @@ aarch64* | arm64*)
 esac
 
 
-# mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.backup
-# wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo
-# sed -i 's/\$releasever/7/g' /etc/yum.repos.d/CentOS-*.repo
-# yum makecache
-
-# yum install -y epel-release
-# yum install -y dnf
-
-dnf install -y wget cpio diffutils git python3-pip python3-devel mercurial gcc gcc-c++ glibc-devel findutils autoconf automake libtool jq rsync-daemon rsync patch libnbd-devel qemu-img xen-libs capstone nbdkit-devel unzip java-11-openjdk-devel btrfs-progs-devel device-mapper-devel --skip-broken
+dnf install -y wget cpio diffutils git python3-pip python3-devel mercurial \
+gcc gcc-c++ glibc-devel findutils autoconf automake libtool jq rsync-daemon \
+rsync patch libnbd-devel nbdkit-devel unzip java-11-openjdk-devel btrfs-progs-devel device-mapper-devel --skip-broken
 
 
 # handle binaries
@@ -75,8 +69,11 @@ if [ "${target}" = "cdi-cloner" ]; then
 elif [ "${target}" = "cdi-importer" ]; then
     go build -a -o ${OUTPUT_DIR}/cdi-containerimage-server tools/cdi-containerimage-server/main.go && chmod +x ${OUTPUT_DIR}/cdi-containerimage-server
     go build -a -o ${OUTPUT_DIR}/cdi-source-update-poller tools/cdi-source-update-poller/main.go && chmod +x ${OUTPUT_DIR}/cdi-source-update-poller
+    dnf install -y qemu-img xen-libs capstone libxcrypt-compat nbdkit-server nbdkit-basic-filters nbdkit-vddk-plugin nbdkit-curl-plugin nbdkit-xz-filter nbdkit-gzip-filter ostree-libs containers-common --skip-broken
 elif [ "${target}" = "cdi-operator" ]; then
     go build -a -o ${OUTPUT_DIR}/csv-generator tools/csv-generator/csv-generator.go && chmod +x ${OUTPUT_DIR}/csv-generator
+elif [ "${target}" = "cdi-uploadserver" ]; then
+    dnf install -y qemu-img xen-libs capstone --skip-broken
 fi
 
 
